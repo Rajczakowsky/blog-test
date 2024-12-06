@@ -7,7 +7,7 @@ import {
   PostActions,
   PostBody,
   Button,
-} from "../../styles";
+} from "./styles";
 
 import { PostType } from "../../../types";
 

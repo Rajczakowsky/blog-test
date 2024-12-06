@@ -81,6 +81,8 @@ yarn docs
 - **State Management**: Storing fetched data in state locally only for the purpose of being able to show deletion of posts, as the fake API is not actually changing the data. This would not be necessary in a real scenario.
 - **Data Fetching**: Chose React Query for fetching the data to speed up the process and have caching out of the box.
 - **Confirmation Dialog**: Selected a small confirmation/alert library `react-confirm-alert`. With more time, a component like this (modal) would be created as part of the components library.
+- **Styling**: Selected old school `styled-components` to style components. 
+
 
 ## More Improvements/Features
 

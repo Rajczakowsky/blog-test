@@ -1,4 +1,4 @@
-import { Search, SearchInput } from "../../styles";
+import { Search, SearchInput } from "./styles";
 
 /**
  * The `SearchForm` component renders a search input and displays the number of posts found.
