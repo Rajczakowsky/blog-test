@@ -3,10 +3,15 @@ import { useGetPosts, useDeletePosts } from "../api";
 import { PostsList } from "./components/PostsList/PostsList";
 import { SearchForm } from "./components/SearchForm/SearchForm";
 import type { PostType } from "../types";
-import { Container, PostsCount, Message, PageHeading } from "./styles";
+import {
+  Container,
+  PostsCount,
+  Message,
+  PageHeading,
+  ContainerInner,
+} from "./styles";
 import { useDebounce } from "use-debounce";
 import { showDeleteConfirmation } from "../utils";
-
 /**
  * The `PostsPage` component is responsible for displaying a list of blog posts with search and delete functionality.
  *
@@ -48,7 +53,7 @@ export const PostsPage = () => {
       statePostsList?.filter((post) =>
         `${post.title} ${post.body}`
           .toLowerCase()
-          .includes(debouncedQuery.toLowerCase()),
+          .includes(debouncedQuery.toLowerCase())
       ) || []
     );
   }, [statePostsList, debouncedQuery]);
@@ -79,24 +84,28 @@ export const PostsPage = () => {
 
   if (error || errorDeletingPost)
     return (
-      <Message>{`An error has occurred: ${error || errorDeletingPost}`}</Message>
+      <div className="text-[var(--text-color)] flex items-center content-center text-center">
+        {`An error has occurred: ${error || errorDeletingPost}`}
+      </div>
     );
 
   return (
-    <>
-      <PageHeading>Twinkl Blog</PageHeading>
-      <Container>
-        <SearchForm query={query} setQuery={setQuery} />
-        <PostsCount>
-          {isPending
-            ? "Loading posts..."
-            : `${filteredPosts.length} posts found`}
-        </PostsCount>
-        {filteredPosts.length > 0 && (
-          <PostsList posts={filteredPosts} onDelete={handleDelete} />
-        )}
-      </Container>
-    </>
+    <div className="flex flex-col h-screen">
+      <h1 className="text-3xl text-white text-center p-4">Twinkl Blog</h1>
+      <div className="h-full flex flex-col items-center">
+        <div className="flex flex-col h-full w-full max-w-3xl align-center">
+          <SearchForm query={query} setQuery={setQuery} />
+          <div className="text-white mb-4 text-center">
+            {isPending
+              ? "Loading posts..."
+              : `${filteredPosts.length} posts found`}
+          </div>
+          {filteredPosts.length > 0 && (
+            <PostsList posts={filteredPosts} onDelete={handleDelete} />
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 

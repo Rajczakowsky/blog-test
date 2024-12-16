@@ -1,4 +1,3 @@
-import { Search, SearchInput } from "./styles";
 
 /**
  * The `SearchForm` component renders a search input and displays the number of posts found.
@@ -23,13 +22,14 @@ type SearchFormProps = {
 
 export const SearchForm = ({ query, setQuery }: SearchFormProps) => {
   return (
-    <Search role="search">
+    <section className="mb-4 text-center" role="search">
       <form
         action="#"
         method="get"
         onSubmit={(e: React.FormEvent<HTMLFormElement>) => e.preventDefault()}
       >
-        <SearchInput
+        <input
+        className="p-2 border border-gray-300 rounded-md min-w-[400px]"
           type="search"
           name="search"
           id="search"
@@ -40,8 +40,9 @@ export const SearchForm = ({ query, setQuery }: SearchFormProps) => {
           }
           aria-label="Search posts"
           autoComplete="off"
+          autoFocus
         />
       </form>
-    </Search>
+    </section>
   );
 };

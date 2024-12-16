@@ -1,16 +1,7 @@
-import {
-  PostsListContainer,
-  PostsWrapper,
-  Post,
-  PostContent,
-  PostTitle,
-  PostActions,
-  PostBody,
-  Button,
-} from "./styles";
-
+import AutoSizer from "react-virtualized-auto-sizer";
+import { FixedSizeList } from "react-window";
 import { PostType } from "../../../types";
-
+import { Link } from "react-router-dom";
 type PostsListProps = {
   posts: PostType[];
   onDelete: (id: number) => void;
@@ -33,24 +24,52 @@ type PostsListProps = {
  */
 
 export const PostsList = ({ posts, onDelete }: PostsListProps) => (
-  <PostsListContainer>
-    <PostsWrapper>
-      {posts.map((post) => (
-        <Post key={post.id}>
-          <PostContent>
-            <PostTitle>{post.title}</PostTitle>
-            <PostBody>{post.body}</PostBody>
-          </PostContent>
-          <PostActions>
-            <Button
-              onClick={() => onDelete(post.id)}
-              aria-label={`Delete post titled ${post.title}`}
-            >
-              Remove
-            </Button>
-          </PostActions>
-        </Post>
-      ))}
-    </PostsWrapper>
-  </PostsListContainer>
+  <div className="flex-1 p-3 bg-white h-full">
+    <AutoSizer>
+      {({ height, width }) => {
+        return (
+          <FixedSizeList
+            height={height}
+            width={width}
+            itemCount={posts.length}
+            itemSize={150}
+          >
+            {({ index, style }) => {
+              const post = posts[index];
+
+              return (
+                <div
+                  key={post.id}
+                  className="flex p-4 border border-slate-300 rounded-md gap-4"
+                  style={{
+                    ...style,
+                    height:
+                      typeof style.height === "number"
+                        ? style.height - 10
+                        : "auto",
+                  }}
+                >
+                  <div className="flex-1">
+                    <Link to={`post/${post.id}`}>
+                      <h2 className="text-l uppercase mb-2">{post.title}</h2>
+                    </Link>
+                    <p className=" line-clamp-2">{post.body}</p>
+                  </div>
+                  <div className="flex items-center">
+                    <button
+                      className="bg-slate-200 border border-slate-400 px-2.5 py-1 cursor-pointer rounded-md"
+                      onClick={() => onDelete(post.id)}
+                      aria-label={`Delete post titled ${post.title}`}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              );
+            }}
+          </FixedSizeList>
+        );
+      }}
+    </AutoSizer>
+  </div>
 );
