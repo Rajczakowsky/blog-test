@@ -1,57 +1,60 @@
-import { useEffect, useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useGetPosts, useDeletePosts } from "../api";
 import { PostsList } from "./components/PostsList/PostsList";
 import { SearchForm } from "./components/SearchForm/SearchForm";
 import type { PostType } from "../types";
-import { Container, PostsCount, Message, PageHeading } from "./styles";
+import {
+  Container,
+  PostsCount,
+  Message,
+  PageHeading,
+  PostsWrapper,
+  PostsListContainer,
+  Button,
+  PageIndicator,
+  Pagination,
+} from "./styles";
 import { useDebounce } from "use-debounce";
+import { useSearchParams } from "react-router-dom";
+
 import { showDeleteConfirmation } from "../utils";
 
-/**
- * The `PostsPage` component is responsible for displaying a list of blog posts with search and delete functionality.
- *
- * Features:
- * - Fetches posts data using the `useGetPosts` hook.
- * - Allows users to search posts by title and body content.
- * - Allows users to delete posts using the `useDeletePosts` hook.
- * - Displays the number of posts found based on the search query.
- * - Handles loading and error states during data fetching and deletion.
- *
- * @component
- * @example
- * return (
- *   <PostsPage />
- * )
- *
- * @returns {JSX.Element} The rendered component.
- */
-
 export const PostsPage = () => {
+  const offSet = 10;
   const [query, setQuery] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchParamsPage = searchParams.get("page") || "1";
+
+  const [startPage, setStartPage] = useState(1);
+
   // Adding this useEffect only to imitate deleting posts
   const [statePostsList, setStatePostsList] = useState<PostType[]>([]);
-  const { data: postsList, isPending, error } = useGetPosts();
+  const { data: postsList, isPending, error } = useGetPosts(startPage, offSet);
   const { mutate: deletePost, error: errorDeletingPost } = useDeletePosts();
+  const currentPage = Math.floor(startPage / offSet + 1);
 
-  // Adding this useEffect to update the state when the postsList changes
-  // because of fake API not deleting actial data
   useEffect(() => {
-    if (postsList) {
-      setStatePostsList(postsList);
-    }
-  }, [postsList]);
+    const intSearchParamsPage = parseInt(searchParamsPage, 10);
+    setStartPage(
+      intSearchParamsPage === 1 ? 1 : intSearchParamsPage * offSet - offSet
+    );
+  }, [searchParamsPage]);
+
+  const updateSearchParams = (page: number) => {
+    setSearchParams({ page: page.toString() });
+  };
 
   const [debouncedQuery] = useDebounce(query, 300);
 
   const filteredPosts = useMemo(() => {
     return (
-      statePostsList?.filter((post) =>
+      postsList?.filter((post) =>
         `${post.title} ${post.body}`
           .toLowerCase()
-          .includes(debouncedQuery.toLowerCase()),
+          .includes(debouncedQuery.toLowerCase())
       ) || []
     );
-  }, [statePostsList, debouncedQuery]);
+  }, [postsList, debouncedQuery]);
 
   /**
    * Handles the deletion of a post.
@@ -87,14 +90,41 @@ export const PostsPage = () => {
       <PageHeading>Twinkl Blog</PageHeading>
       <Container>
         <SearchForm query={query} setQuery={setQuery} />
-        <PostsCount>
-          {isPending
-            ? "Loading posts..."
-            : `${filteredPosts.length} posts found`}
-        </PostsCount>
-        {filteredPosts.length > 0 && (
-          <PostsList posts={filteredPosts} onDelete={handleDelete} />
-        )}
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <PostsListContainer>
+            <PostsWrapper>
+              {filteredPosts.length > 0 && (
+                <PostsList posts={filteredPosts} onDelete={handleDelete} />
+              )}
+              {isPending && (
+                <PostsCount>{isPending && "Loading posts..."}</PostsCount>
+              )}
+              {filteredPosts.length === 0 && !isPending && (
+                <PostsCount>No posts found</PostsCount>
+              )}
+            </PostsWrapper>
+          </PostsListContainer>
+
+          <Pagination>
+            <Button
+              onClick={() => {
+                updateSearchParams(currentPage - 1);
+              }}
+              disabled={currentPage <= 1}
+            >
+              Previous
+            </Button>
+            <PageIndicator>Current Page: {currentPage}</PageIndicator>
+            <Button
+              onClick={() => {
+                updateSearchParams(currentPage + 1);
+              }}
+              disabled={currentPage === 10}
+            >
+              Next
+            </Button>
+          </Pagination>
+        </div>
       </Container>
     </>
   );

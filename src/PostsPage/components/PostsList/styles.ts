@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const PostsWrapper = styled.div`
   flex: 1;
   overflow-y: auto;
-  max-height: calc(100vh - 175px);
+  max-height: calc(100vh - 210px);
   padding: var(--sl, sm);
   background-color: var(--background-color, #f9f9f9);
 `;

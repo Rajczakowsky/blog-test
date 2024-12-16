@@ -33,24 +33,22 @@ type PostsListProps = {
  */
 
 export const PostsList = ({ posts, onDelete }: PostsListProps) => (
-  <PostsListContainer>
-    <PostsWrapper>
-      {posts.map((post) => (
-        <Post key={post.id}>
-          <PostContent>
-            <PostTitle>{post.title}</PostTitle>
-            <PostBody>{post.body}</PostBody>
-          </PostContent>
-          <PostActions>
-            <Button
-              onClick={() => onDelete(post.id)}
-              aria-label={`Delete post titled ${post.title}`}
-            >
-              Remove
-            </Button>
-          </PostActions>
-        </Post>
-      ))}
-    </PostsWrapper>
-  </PostsListContainer>
+  <>
+    {posts.map((post) => (
+      <Post key={post.id}>
+        <PostContent>
+          <PostTitle>{post.title}</PostTitle>
+          <PostBody>{post.body}</PostBody>
+        </PostContent>
+        <PostActions>
+          <Button
+            onClick={() => onDelete(post.id)}
+            aria-label={`Delete post titled ${post.title}`}
+          >
+            Remove
+          </Button>
+        </PostActions>
+      </Post>
+    ))}
+  </>
 );
