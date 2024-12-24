@@ -1,6 +1,4 @@
 import {
-  PostsListContainer,
-  PostsWrapper,
   Post,
   PostContent,
   PostTitle,

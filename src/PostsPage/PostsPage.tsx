@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { useGetPosts, useDeletePosts } from "../api";
+import { useGetPosts, useDeletePosts, useGetPostsCount } from "../api";
 import { PostsList } from "./components/PostsList/PostsList";
 import { SearchForm } from "./components/SearchForm/SearchForm";
 import type { PostType } from "../types";
@@ -10,12 +10,10 @@ import {
   PageHeading,
   PostsWrapper,
   PostsListContainer,
-  Button,
-  PageIndicator,
-  Pagination,
 } from "./styles";
 import { useDebounce } from "use-debounce";
 import { useSearchParams } from "react-router-dom";
+import { Pagination } from "./components/Pagination/Pagination";
 
 import { showDeleteConfirmation } from "../utils";
 
@@ -27,11 +25,19 @@ export const PostsPage = () => {
 
   const [startPage, setStartPage] = useState(1);
 
-  // Adding this useEffect only to imitate deleting posts
   const [statePostsList, setStatePostsList] = useState<PostType[]>([]);
   const { data: postsList, isPending, error } = useGetPosts(startPage, offSet);
+  const {
+    data: postsCount,
+    isPending: loadingCount,
+    error: countError,
+  } = useGetPostsCount();
   const { mutate: deletePost, error: errorDeletingPost } = useDeletePosts();
-  const currentPage = Math.floor(startPage / offSet + 1);
+
+  const onValueChange = (value: string) => {
+    setSearchParams({ page: "1" });
+    setQuery(value);
+  };
 
   useEffect(() => {
     const intSearchParamsPage = parseInt(searchParamsPage, 10);
@@ -39,10 +45,6 @@ export const PostsPage = () => {
       intSearchParamsPage === 1 ? 1 : intSearchParamsPage * offSet - offSet
     );
   }, [searchParamsPage]);
-
-  const updateSearchParams = (page: number) => {
-    setSearchParams({ page: page.toString() });
-  };
 
   const [debouncedQuery] = useDebounce(query, 300);
 
@@ -56,20 +58,10 @@ export const PostsPage = () => {
     );
   }, [postsList, debouncedQuery]);
 
-  /**
-   * Handles the deletion of a post.
-   *
-   * @param {number} id - The ID of the post to delete.
-   */
   const handleDelete = (id: number) => {
     showDeleteConfirmation(() => deletePostWithSuccessHandler(id));
   };
 
-  /**
-   * Deletes a post and updates the state on success.
-   *
-   * @param {number} id - The ID of the post to delete.
-   */
   const deletePostWithSuccessHandler = (id: number) => {
     deletePost(id, {
       onSuccess: (_, variables) => {
@@ -80,7 +72,7 @@ export const PostsPage = () => {
     });
   };
 
-  if (error || errorDeletingPost)
+  if (error || errorDeletingPost || countError)
     return (
       <Message>{`An error has occurred: ${error || errorDeletingPost}`}</Message>
     );
@@ -89,41 +81,23 @@ export const PostsPage = () => {
     <>
       <PageHeading>Twinkl Blog</PageHeading>
       <Container>
-        <SearchForm query={query} setQuery={setQuery} />
+        <SearchForm query={query} setQuery={onValueChange} />
         <div style={{ display: "flex", flexDirection: "column" }}>
           <PostsListContainer>
             <PostsWrapper>
-              {filteredPosts.length > 0 && (
+              {filteredPosts.length > 0 && !loadingCount && (
                 <PostsList posts={filteredPosts} onDelete={handleDelete} />
               )}
-              {isPending && (
+              {(isPending || loadingCount) && (
                 <PostsCount>{isPending && "Loading posts..."}</PostsCount>
               )}
-              {filteredPosts.length === 0 && !isPending && (
+              {filteredPosts.length === 0 && !isPending && !loadingCount && (
                 <PostsCount>No posts found</PostsCount>
               )}
             </PostsWrapper>
           </PostsListContainer>
 
-          <Pagination>
-            <Button
-              onClick={() => {
-                updateSearchParams(currentPage - 1);
-              }}
-              disabled={currentPage <= 1}
-            >
-              Previous
-            </Button>
-            <PageIndicator>Current Page: {currentPage}</PageIndicator>
-            <Button
-              onClick={() => {
-                updateSearchParams(currentPage + 1);
-              }}
-              disabled={currentPage === 10}
-            >
-              Next
-            </Button>
-          </Pagination>
+          <Pagination postsCount={postsCount} />
         </div>
       </Container>
     </>

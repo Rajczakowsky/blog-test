@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 
 export const Container = styled.div`
   max-width: var(--max-width);
@@ -62,24 +63,32 @@ export const PostsListContainer = styled.div`
   }
 `;
 
-export const Button = styled.button`
+export const Button = styled(Link)<{ disabled?: boolean }>`
   background-color: var(--background-color);
   border: 1px solid var(--border-color);
   padding: 5px 10px;
+  margin: 0 5px;
   cursor: pointer;
   &:hover {
     background-color: var(--border-color);
   }
   border-radius: var(--border-radius);
+  ${(props) => props.disabled && "opacity: 0.5; cursor: default;"}
 `;
 
-export const PageIndicator = styled.div`
-  padding: 0 20px;
+export const PageIndicator = styled(Link)<{ active: boolean }>`
+  padding: 0 5px;
+  margin: 0 1px;
   color: white;
   vertical-align: middle;
+  border: 1px solid var(--border-color);
+  background: ${(props) =>
+    props.active ? "#1668aa" : "lighten(rgb(var(--background-color)), 80%)"};
 `;
 
-export const Pagination = styled.div`
+export const PageIndicators = styled.div``;
+
+export const PaginationWrapper = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
