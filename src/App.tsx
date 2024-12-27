@@ -1,4 +1,5 @@
 import Posts from "./PostsPage/PostsPage";
+import InfinitePosts from "./InfinitePosts/InfinitePosts";
 import { GlobalStyles } from "./globalStyles";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
@@ -14,7 +15,8 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Posts />}></Route>
+            <Route path="/pagination" element={<Posts />}></Route>
+            <Route path="/infinite-loading" element={<InfinitePosts />}></Route>
           </Routes>
         </BrowserRouter>
       </QueryClientProvider>

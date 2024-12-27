@@ -79,7 +79,7 @@ export const PostsPage = () => {
 
   return (
     <>
-      <PageHeading>Twinkl Blog</PageHeading>
+      <PageHeading>Blog</PageHeading>
       <Container>
         <SearchForm query={query} setQuery={onValueChange} />
         <div style={{ display: "flex", flexDirection: "column" }}>

@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { apiPath } from "../constants";
 import { PostType } from "@/types";
 
@@ -11,5 +11,6 @@ export function useGetPosts(start: number = 0, limit: number = 5) {
       );
       return await response.json();
     },
+    placeholderData: keepPreviousData,
   });
 }
