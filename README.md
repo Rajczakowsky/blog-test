@@ -1,6 +1,6 @@
-# Twinkl Blog Exercise Application
+# Blog Exercise Application
 
-Welcome to the Twinkl Blog exercise application!
+Welcome to the Blog exercise application!
 
 ## Features
 
